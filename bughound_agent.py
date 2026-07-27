@@ -1,3 +1,4 @@
+import ast
 import json
 import os
 import re
@@ -118,6 +119,12 @@ class BugHoundAgent:
 
         if not cleaned:
             self._log("ACT", "LLM returned empty output. Falling back to heuristic fixer.")
+            return self._heuristic_fix(code_snippet, issues)
+
+        try:
+            ast.parse(cleaned)
+        except SyntaxError as e:
+            self._log("ACT", f"LLM output is not valid Python ({e}). Falling back to heuristic fixer.")
             return self._heuristic_fix(code_snippet, issues)
 
         return cleaned

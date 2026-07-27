@@ -1,3 +1,4 @@
+import ast
 from typing import Dict, List
 
 
@@ -24,6 +25,16 @@ def assess_risk(
             "score": 0,
             "level": "high",
             "reasons": ["No fix was produced."],
+            "should_autofix": False,
+        }
+
+    try:
+        ast.parse(fixed_code)
+    except SyntaxError as e:
+        return {
+            "score": 0,
+            "level": "high",
+            "reasons": [f"Fixed code is not valid Python: {e}"],
             "should_autofix": False,
         }
 
